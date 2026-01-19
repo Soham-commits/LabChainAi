@@ -3,7 +3,7 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { MOCK_INVENTORY, MOCK_SUPPLIERS } from './constants';
 import { ComputedInventoryItem, StockStatus, AgentDecision, AuditLogEntry } from './types';
 import InventoryTable from './components/InventoryTable';
-import { analyzeProcurement } from './services/geminiService';
+import { analyzeProcurement } from './services/labchainApi.ts';
 import { 
   BeakerIcon, 
   CpuChipIcon, 

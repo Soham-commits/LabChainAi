@@ -1,0 +1,6 @@
+# Python dependencies for the backend
+fastapi
+uvicorn
+google-generativeai
+pydantic
+python-dotenv
