@@ -22,7 +22,7 @@ app.add_middleware(
 
 
 @app.get("/")
-async def health_check():
+def health_check():
     """Health check endpoint"""
     from services.audit_log import add_log, LogSource
     add_log(LogSource.SYSTEM, "Health check endpoint accessed")
@@ -30,7 +30,7 @@ async def health_check():
 
 
 @app.get("/inventory")
-async def get_inventory():
+def get_inventory():
     """Get inventory data with calculated risk metrics"""
     from data.inventory import get_inventory_with_metrics
     from services.audit_log import add_log, LogSource
@@ -49,7 +49,7 @@ async def get_inventory():
 
 
 @app.get("/agent/logs")
-async def get_audit_logs():
+def get_audit_logs():
     """Get complete audit log timeline"""
     from services.audit_log import get_all_logs, get_log_count
     
@@ -63,10 +63,11 @@ async def get_audit_logs():
 
 
 @app.get("/agent/run")
-async def run_agent():
+def run_agent():
     """Trigger LabChain Sentinel analysis loop"""
     from agent.sentinel import run_sentinel_analysis
     return run_sentinel_analysis()
+
 
 
 if __name__ == "__main__":

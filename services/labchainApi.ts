@@ -2,7 +2,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { InventoryItem, Supplier, AgentDecision } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.API_KEY || "" });
 
 export const analyzeProcurement = async (
   inventory: InventoryItem[],
@@ -26,10 +26,10 @@ export const analyzeProcurement = async (
     
     INVENTORY STATUS:
     ${inventoryBrief}
-
+    
     SUPPLIER OPTIONS:
     ${supplierBrief}
-
+    
     REQUIRED ACTION:
     Identify the MOST CRITICAL clinical item needing reorder based on "Days Until Stock-Out" and minimum thresholds.
     

@@ -3,7 +3,7 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { MOCK_INVENTORY, MOCK_SUPPLIERS } from './constants';
 import { ComputedInventoryItem, StockStatus, AgentDecision, AuditLogEntry } from './types';
 import InventoryTable from './components/InventoryTable';
-import { analyzeProcurement } from './services/labchainApi.ts';
+import { analyzeProcurement } from './services/labchainApi';
 import { 
   BeakerIcon, 
   CpuChipIcon, 
@@ -298,11 +298,21 @@ const App: React.FC = () => {
                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Autonomous intelligence output</p>
                         </div>
                       </div>
-                      <span className={`px-6 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest ${
-                        decision.decision === 'REORDER' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500'
-                      }`}>
-                        {decision.decision}
-                      </span>
+                      <div className="flex items-center space-x-4">
+                        <button 
+                          onClick={runAgent}
+                          disabled={isAnalyzing}
+                          className="group flex items-center space-x-3 px-6 py-3 bg-indigo-600 text-white rounded-xl shadow-sm text-[11px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <ArrowPathIcon className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
+                          <span>Rerun Agent</span>
+                        </button>
+                        <span className={`px-6 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest ${
+                          decision.decision === 'REORDER' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500'
+                        }`}>
+                          {decision.decision}
+                        </span>
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">

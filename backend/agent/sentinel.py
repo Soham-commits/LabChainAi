@@ -120,8 +120,12 @@ def run_sentinel_analysis() -> Dict[str, Any]:
         return validate_agent_response({"error": "API key missing"})
 
     try:
+        add_log(LogSource.SYSTEM, f"Configuring Gemini with API key (length: {len(api_key) if api_key else 0})")
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-flash-latest')
+        
+        selected_model = 'gemini-1.5-flash'
+        add_log(LogSource.SYSTEM, f"Using model: {selected_model}")
+        model = genai.GenerativeModel(selected_model)
         
         user_prompt = f"""
         INVENTORY DATA (including base_price_inr): {json.dumps(critical_items)}
@@ -134,16 +138,19 @@ def run_sentinel_analysis() -> Dict[str, Any]:
         Return structured JSON matching the AgentResponse schema.
         """
 
-        
+        add_log(LogSource.SENTINEL, "Requesting reasoning from Gemini...")
         response = model.generate_content(
             f"{SENTINEL_MISSION}\n\n{user_prompt}",
             generation_config={"response_mime_type": "application/json"}
         )
         
+        add_log(LogSource.SENTINEL, "Gemini response received")
         raw_output = response.text
         
         # 5. Validate
+        add_log(LogSource.SYSTEM, "Validating agent response")
         validated_data = validate_agent_response(raw_output)
+
         
         # 6. Execute Action (New Layer)
         if validated_data["decision"] != DecisionType.NO_ACTION:
