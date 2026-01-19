@@ -19,8 +19,10 @@ export const analyzeProcurement = async (
   ).join('\n');
 
   const prompt = `
-    As the LabChain AI Procurement Agent specialized in Indian Hospital Supply Chains, analyze the laboratory inventory and supplier options.
-    Decide if a reorder is necessary for critical items. Use INR (₹) for all costing.
+    PRIMARY DIRECTIVE: LabChain Sentinel autonomously monitors laboratory inventory, identifies clinically critical supply risks, selects the optimal supplier, and executes procurement actions with full explainability and auditability.
+    
+    As the LabChain Sentinel Agent, analyze the laboratory inventory and supplier options below.
+    Your task is to identify items needing immediate reorder to prevent laboratory downtime while ensuring cost-effectiveness and supply chain resilience. Use INR (₹) for all costing.
     
     INVENTORY STATUS:
     ${inventoryBrief}
@@ -28,11 +30,15 @@ export const analyzeProcurement = async (
     SUPPLIER OPTIONS:
     ${supplierBrief}
 
-    Identify the MOST CRITICAL item needing reorder for the hospital.
+    REQUIRED ACTION:
+    Identify the MOST CRITICAL clinical item needing reorder based on "Days Until Stock-Out" and minimum thresholds.
+    
+    OUTPUT FORMAT:
     Provide:
-    1. A high-level explanation in simple language.
-    2. Exactly 4 simple logical steps (e.g., "Checked current tubes available", "Calculated usage for next week").
+    1. A clear high-level explanation of the identified risk and your mitigation strategy.
+    2. Exactly 4 simple reasoning steps that demonstrate your logic trace (monitoring -> risk detection -> supplier choice -> execution).
     3. A confidence score between 0.85 and 0.99.
+    4. Select the supplier with the best balance of delivery speed and reliability rating.
   `;
 
   const response = await ai.models.generateContent({
