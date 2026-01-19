@@ -4,12 +4,33 @@ Main entry point for the backend application
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from contextlib import asynccontextmanager
 import os
 
 # Load environment variables
 load_dotenv()
 
-app = FastAPI(title="LabChainAi Backend")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    STEP 3: Lifespan event handler for startup/shutdown
+    Starts the scheduler on application startup
+    """
+    # Startup: Initialize scheduler
+    from scheduler import start_scheduler
+    from services.audit_log import add_log, LogSource
+    
+    add_log(LogSource.SYSTEM, "LabChainAi Backend starting up...")
+    await start_scheduler()
+    
+    yield
+    
+    # Shutdown: Stop scheduler gracefully
+    from scheduler import stop_scheduler
+    add_log(LogSource.SYSTEM, "LabChainAi Backend shutting down...")
+    await stop_scheduler()
+
+app = FastAPI(title="LabChainAi Backend", lifespan=lifespan)
 
 # CORS middleware for frontend communication
 app.add_middleware(

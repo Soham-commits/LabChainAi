@@ -123,7 +123,7 @@ def run_sentinel_analysis() -> Dict[str, Any]:
         add_log(LogSource.SYSTEM, f"Configuring Gemini with API key (length: {len(api_key) if api_key else 0})")
         genai.configure(api_key=api_key)
         
-        selected_model = 'gemini-1.5-flash'
+        selected_model = 'gemini-3-flash-preview'
         add_log(LogSource.SYSTEM, f"Using model: {selected_model}")
         model = genai.GenerativeModel(selected_model)
         
