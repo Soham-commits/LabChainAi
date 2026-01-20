@@ -3,9 +3,12 @@ Audit log service module
 Provides append-only audit trail for all system activities
 Clinical-grade logging for NABL/ISO compliance mindset
 """
+import json
+import os
 from datetime import datetime
-from typing import List, Dict, Any, Literal
+from typing import List, Dict, Any
 from enum import Enum
+from pathlib import Path
 
 
 class LogSource(str, Enum):
@@ -15,14 +18,17 @@ class LogSource(str, Enum):
     SYSTEM = "SYSTEM"
 
 
-# In-memory audit log (session-persistent)
-# Append-only: No delete, no update, no overwrite
-_AUDIT_LOG: List[Dict[str, Any]] = []
+# Append-only log file path
+LOG_DIR = Path(__file__).parent.parent / "logs"
+LOG_FILE = LOG_DIR / "audit.log"
+
+# Ensure log directory exists
+LOG_DIR.mkdir(exist_ok=True)
 
 
 def add_log(source: LogSource, message: str) -> None:
     """
-    Add a new entry to the audit log
+    Add a new entry to the audit log (append-only file)
     Append-only operation - cannot be undone
     
     Args:
@@ -37,16 +43,32 @@ def add_log(source: LogSource, message: str) -> None:
         "message": message
     }
     
-    _AUDIT_LOG.append(log_entry)
+    # Append to file (append-only, no updates, no deletes)
+    with open(LOG_FILE, "a") as f:
+        f.write(json.dumps(log_entry) + "\n")
 
 
 def get_all_logs() -> List[Dict[str, Any]]:
     """
-    Get complete audit log timeline
+    Get complete audit log timeline from file
     Returns logs ordered from oldest → newest
     Read-only operation
     """
-    return _AUDIT_LOG.copy()  # Return copy to prevent external modification
+    if not LOG_FILE.exists():
+        return []
+    
+    logs = []
+    with open(LOG_FILE, "r") as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                try:
+                    logs.append(json.loads(line))
+                except json.JSONDecodeError:
+                    # Skip malformed lines (should never happen in append-only mode)
+                    pass
+    
+    return logs
 
 
 def get_log_count() -> int:
@@ -54,7 +76,7 @@ def get_log_count() -> int:
     Get total number of log entries
     Useful for monitoring system activity
     """
-    return len(_AUDIT_LOG)
+    return len(get_all_logs())
 
 
 # Initialize with system startup log

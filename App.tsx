@@ -93,11 +93,11 @@ const App: React.FC = () => {
     
     try {
       addLog('LabChain Sentinel scanning inventory matrices...', 'ai');
-      const result = await analyzeProcurement(MOCK_INVENTORY, MOCK_SUPPLIERS);
+      const result = await analyzeProcurement();
       
       setDecision(result);
       
-      if (result.decision === 'REORDER') {
+      if (result.decision === 'REORDER' || result.decision === 'URGENT_RESTOCK' || result.decision === 'PROCURE') {
         addLog(`Sentinel recommendation: Order ${result.recommendedQuantity} units from ${result.selectedSupplier}.`, 'ai');
         addLog(`Procurement successful: Purchase order ${result.poId} generated and transmitted.`, 'system');
         addLog('Sentinel task completed successfully: Supply chain optimization cycle concluded.', 'ai');
