@@ -92,7 +92,7 @@ const App: React.FC = () => {
     addLog('Operator initiated autonomous audit cycle.', 'user');
     
     try {
-      addLog('LabChain Sentinel scanning inventory matrices...', 'ai');
+      addLog('LabChain Sentinel scanning inventory snapshot (today)...', 'ai');
       const result = await analyzeProcurement();
       
       setDecision(result);
@@ -102,7 +102,7 @@ const App: React.FC = () => {
         addLog(`Procurement successful: Purchase order ${result.poId} generated and transmitted.`, 'system');
         addLog('Sentinel task completed successfully: Supply chain optimization cycle concluded.', 'ai');
       } else {
-        addLog('Sentinel analysis: Inventory buffers healthy. No action required.', 'ai');
+        addLog('Sentinel analysis: Inventory snapshot (today) shows healthy buffers. No action required.', 'ai');
         addLog('Sentinel task completed successfully: Audit cycle concluded.', 'ai');
       }
     } catch (error) {
@@ -116,7 +116,7 @@ const App: React.FC = () => {
   const handleRefresh = useCallback(() => {
     const time = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
     setLastUpdated(`${time} IST`);
-    addLog('Inventory matrix refreshed by Operator.', 'user');
+    addLog('Inventory snapshot (today) refreshed by Operator.', 'user');
     setTimeout(() => addLog('Inventory feed sync: Successful', 'system'), 300);
   }, [addLog]);
 
@@ -156,7 +156,7 @@ const App: React.FC = () => {
           
           <nav className="hidden lg:flex items-center space-x-12">
             <button onClick={() => scrollToSection('inventory-section')} className="text-[11px] font-black text-slate-500 uppercase tracking-widest hover:text-indigo-600 transition-all relative group">
-              Inventory Matrix
+              Inventory Snapshot (Today)
               <span className="absolute -bottom-1.5 left-0 w-0 h-0.5 bg-indigo-600 transition-all group-hover:w-full"></span>
             </button>
             <button onClick={() => scrollToSection('agent-workspace')} className="text-[11px] font-black text-slate-500 uppercase tracking-widest hover:text-indigo-600 transition-all relative group">
@@ -220,7 +220,7 @@ const App: React.FC = () => {
           <div className="flex items-center justify-between px-2">
             <div className="space-y-1">
               <h3 className="text-[14px] font-black text-slate-900 uppercase tracking-[0.25em] flex items-center">
-                <ShoppingBagIcon className="w-5 h-5 mr-3 text-indigo-600" /> Inventory Matrix
+                <ShoppingBagIcon className="w-5 h-5 mr-3 text-indigo-600" /> Inventory Snapshot (Today)
               </h3>
               <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">Autonomous monitoring via sentinel protocol</p>
             </div>
@@ -308,9 +308,9 @@ const App: React.FC = () => {
                           <span>Rerun Agent</span>
                         </button>
                         <span className={`px-6 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest ${
-                          decision.decision === 'REORDER' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500'
+                          decision.decision === 'REORDER' ? 'bg-indigo-600 text-white' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                         }`}>
-                          {decision.decision}
+                          {decision.decision === 'NO_ACTION' ? 'Autonomous Scan Complete — Inventory Stable' : decision.decision}
                         </span>
                       </div>
                     </div>
@@ -339,6 +339,21 @@ const App: React.FC = () => {
                         "{decision.explanation}"
                       </p>
                     </div>
+                    
+                    {/* NO_ACTION Positive Explanation */}
+                    {decision.decision === 'NO_ACTION' && (
+                      <div className="mt-6 bg-emerald-50 p-6 rounded-2xl border border-emerald-200 flex items-start space-x-4">
+                        <div className="shrink-0">
+                          <CheckBadgeIcon className="w-6 h-6 text-emerald-600 mt-0.5" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-emerald-900 mb-1">Why this is a positive outcome:</p>
+                          <p className="text-sm text-emerald-800 leading-relaxed">
+                            Sentinel evaluated all items and intentionally avoided procurement to prevent over-ordering.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Execution Success Card */}
